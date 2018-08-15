@@ -40,9 +40,9 @@ public class CustomerApi {
 
         String id = req.pathVariable("id");
 
-        Publisher byId = service.findById(Long.valueOf(id));
+        Mono byId = Mono.from(service.findById(Long.valueOf(id)));
 
-        return ServerResponse.ok().body(byId, Customer.class);
+        return ServerResponse.ok().body(byId, Customer.class).switchIfEmpty(ServerResponse.notFound().build());
 
     }
 
