@@ -22,7 +22,9 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     public Mono<Customer> create(Customer customer) {
-        return null;
+        return rep.create(customer)
+                .flatMap(rep::findById);
+
     }
 
     public Mono<Customer> findById(Long id) {

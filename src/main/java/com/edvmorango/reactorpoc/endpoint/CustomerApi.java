@@ -1,5 +1,9 @@
 package com.edvmorango.reactorpoc.endpoint;
 
+import com.edvmorango.reactorpoc.model.Customer;
+import com.edvmorango.reactorpoc.repository.CustomerRepository;
+import com.edvmorango.reactorpoc.service.CustomerService;
+import com.edvmorango.reactorpoc.service.CustomerServiceImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -9,9 +13,17 @@ import reactor.core.publisher.Mono;
 @Component
 public class CustomerApi {
 
+    private CustomerService service = new CustomerServiceImpl(new CustomerRepository());
+
+
     public Mono<ServerResponse> create(ServerRequest req) {
 
-        return ServerResponse.ok().body(BodyInserters.fromObject("Create"));
+        Mono<Customer> objectMono = req.bodyToMono(Customer.class)
+                .flatMap(c ->  Mono.from(service.create(c)));
+
+        return ServerResponse.ok().body(objectMono, Customer.class);
+
+//        return ServerResponse.ok().body(BodyInserters.fromObject("Create"));
 
     }
 

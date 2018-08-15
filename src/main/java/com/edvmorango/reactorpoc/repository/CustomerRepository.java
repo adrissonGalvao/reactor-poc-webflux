@@ -16,16 +16,24 @@ public class CustomerRepository {
     private Database db;
 
 
-    public CustomerRepository() throws Exception {
+    public CustomerRepository() {
 
-        Connection connection = DriverManager
-                .getConnection("jdbc:mysql://0.0.0.0:3306/webfluxpoc", "root", "123");
 
-        NonBlockingConnectionPool pool = Pools.nonBlocking().maxPoolSize(Runtime.getRuntime().availableProcessors() * 2)
-                .connectionProvider(ConnectionProvider.from(connection))
-                .build();
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection connection = DriverManager
+                    .getConnection("jdbc:mysql://0.0.0.0:3306/webfluxpoc", "root", "123");
 
-        this.db = Database.from(pool);
+
+            NonBlockingConnectionPool pool = Pools.nonBlocking().maxPoolSize(Runtime.getRuntime().availableProcessors() * 2)
+                    .connectionProvider(ConnectionProvider.from(connection))
+                    .build();
+
+            this.db = Database.from(pool);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
     }
 
@@ -60,7 +68,7 @@ public class CustomerRepository {
         return Mono.from(db.select(sql).parameter(id)
                 .get(rs -> new Customer(rs.getLong("id"),
                                         rs.getString("name"),
-                                        rs.getString("emails"))));
+                                        rs.getString("email"))));
 
     }
 
