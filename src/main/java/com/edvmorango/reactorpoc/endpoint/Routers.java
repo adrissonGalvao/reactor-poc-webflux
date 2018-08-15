@@ -16,9 +16,9 @@ public class Routers {
         return RouterFunctions
                 .route(RequestPredicates.POST("/customer"), api::create)
                 .andRoute(RequestPredicates.GET("/customer"), api::list)
-                .andRoute(RequestPredicates.GET("/customer/:id"), api::findById)
-                .andRoute(RequestPredicates.PUT("/customer/:id"), api::update)
-                .andRoute(RequestPredicates.DELETE("/customer/:id"), api::delete);
+                .andRoute(RequestPredicates.GET("/customer/{id}"), api::findById)
+                .andRoute(RequestPredicates.PUT("/customer/{id}"), api::update)
+                .andRoute(RequestPredicates.DELETE("/customer/{id}"), api::delete);
 
     }
 

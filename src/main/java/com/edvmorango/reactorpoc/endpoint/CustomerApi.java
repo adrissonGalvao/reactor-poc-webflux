@@ -23,7 +23,8 @@ public class CustomerApi {
         Mono<Customer> objectMono = req.bodyToMono(Customer.class)
                 .flatMap(c ->  Mono.from(service.create(c)));
 
-        return ServerResponse.ok().body(objectMono, Customer.class);
+
+        return ServerResponse.status(201).body(objectMono, Customer.class);
 
     }
 
@@ -37,7 +38,11 @@ public class CustomerApi {
 
     public Mono<ServerResponse> findById(ServerRequest req) {
 
-        return ServerResponse.ok().body(BodyInserters.fromObject("Find by id"));
+        String id = req.pathVariable("id");
+
+        Publisher byId = service.findById(Long.valueOf(id));
+
+        return ServerResponse.ok().body(byId, Customer.class);
 
     }
 
