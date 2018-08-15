@@ -18,7 +18,7 @@ public class CustomerApi {
     private CustomerService service = new CustomerServiceImpl(new CustomerRepository());
 
 
-    public Mono<ServerResponse> create(ServerRequest req) {
+    Mono<ServerResponse> create(ServerRequest req) {
 
         Mono<Customer> objectMono = req.bodyToMono(Customer.class)
                 .flatMap(c ->  Mono.from(service.create(c)));
@@ -28,7 +28,7 @@ public class CustomerApi {
 
     }
 
-    public Mono<ServerResponse> list(ServerRequest req) {
+    Mono<ServerResponse> list(ServerRequest req) {
 
         var list = service.list();
 
@@ -36,25 +36,32 @@ public class CustomerApi {
 
     }
 
-    public Mono<ServerResponse> findById(ServerRequest req) {
+    Mono<ServerResponse> findById(ServerRequest req) {
 
         String id = req.pathVariable("id");
 
-        Mono byId = Mono.from(service.findById(Long.valueOf(id)));
+        Mono<Customer> byId = Mono.from(service.findById(Long.valueOf(id)));
 
         return ServerResponse.ok().body(byId, Customer.class).switchIfEmpty(ServerResponse.notFound().build());
 
     }
 
-    public Mono<ServerResponse> update(ServerRequest req) {
+    Mono<ServerResponse> update(ServerRequest req) {
 
-        return ServerResponse.ok().body(BodyInserters.fromObject("Update"));
+        Mono<Customer> upd = req.bodyToMono(Customer.class)
+                .flatMap(c -> Mono.from(service.update(c)));
+
+        return ServerResponse.ok().body(upd, Customer.class).switchIfEmpty(ServerResponse.notFound().build());
 
     }
 
-    public Mono<ServerResponse> delete(ServerRequest req) {
+    Mono<ServerResponse> delete(ServerRequest req) {
 
-        return ServerResponse.ok().body(BodyInserters.fromObject("Delete"));
+        Long id = Long.valueOf(req.pathVariable("id"));
+
+        Mono<Void> res = Mono.from(service.delete(id));
+
+        return ServerResponse.status(204).body(res, Void.class).switchIfEmpty(ServerResponse.notFound().build());
 
     }
 }

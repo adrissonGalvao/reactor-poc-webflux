@@ -14,17 +14,15 @@ public class CustomerServiceImpl implements CustomerService {
         this.rep = rep;
     }
 
-    public Mono<Customer> createFlated(Mono<Customer> customer) {
+    public Mono<Customer> createMono(Mono<Customer> customer) {
 
       return rep.create(customer)
               .flatMap(rep::findById);
-
     }
 
     public Mono<Customer> create(Customer customer) {
         return rep.create(customer)
                 .flatMap(rep::findById);
-
     }
 
     public Mono<Customer> findById(Long id) {
@@ -35,4 +33,12 @@ public class CustomerServiceImpl implements CustomerService {
         return rep.list();
     }
 
+
+    public Publisher<Customer> update(Customer customer) {
+        return rep.update(customer).flatMap(rep::findById);
+    }
+
+    public Publisher<Void> delete(Long id) {
+        return rep.delete(id);
+    }
 }

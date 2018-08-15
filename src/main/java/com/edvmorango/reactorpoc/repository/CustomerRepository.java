@@ -84,5 +84,27 @@ public class CustomerRepository {
 
     }
 
+    public Mono<Long> update(Customer c) {
+
+        String sql = "UPDATE TB_CUSTOMER SET name = ?, email = ? where id = ?";
+
+        return Mono.from(
+                    db.update(sql)
+                            .parameters(c.getName(), c.getEmail(), c.getId())
+                            .returnGeneratedKeys()
+                            .getAs(Long.class));
+    }
+
+    public Mono<Void> delete(Long id){
+
+        String sql = "DELETE FROM TB_CUSTOMER WHERE id = ?";
+
+        return Mono.from(db.update(sql).parameter(id).counts()).then();
+
+    }
+
+
+
+
 
 }
