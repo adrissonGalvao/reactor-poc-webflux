@@ -77,7 +77,10 @@ public class CustomerRepository {
 
         String sql = "SELECT * FROM TB_CUSTOMER";
 
-        return Flux.from(db.select(sql).getAs(Customer.class));
+        return Flux.from(db.select(sql)
+                .get(rs -> new Customer(rs.getLong("id"),
+                                        rs.getString("name"),
+                                        rs.getString("email"))));
 
     }
 

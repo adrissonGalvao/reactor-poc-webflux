@@ -4,10 +4,12 @@ import com.edvmorango.reactorpoc.model.Customer;
 import com.edvmorango.reactorpoc.repository.CustomerRepository;
 import com.edvmorango.reactorpoc.service.CustomerService;
 import com.edvmorango.reactorpoc.service.CustomerServiceImpl;
+import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -23,13 +25,13 @@ public class CustomerApi {
 
         return ServerResponse.ok().body(objectMono, Customer.class);
 
-//        return ServerResponse.ok().body(BodyInserters.fromObject("Create"));
-
     }
 
     public Mono<ServerResponse> list(ServerRequest req) {
 
-        return ServerResponse.ok().body(BodyInserters.fromObject("List"));
+        var list = service.list();
+
+        return ServerResponse.ok().body(list, Customer.class);
 
     }
 
