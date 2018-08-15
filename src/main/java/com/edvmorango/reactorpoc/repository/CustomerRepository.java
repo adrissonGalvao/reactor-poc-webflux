@@ -29,15 +29,27 @@ public class CustomerRepository {
 
     }
 
-    public Mono<Integer> create(Mono<Customer> customer) {
+    public Mono<Long> create(Mono<Customer> customer) {
 
         String sql = "INSERT INTO TB_CUSTOMER(name, email) VALUES (?, ?)";
 
         return customer.flatMap(c -> {
-            var res = db.update(sql).parameters(c.getName(), c.getEmail()).returnGeneratedKeys().getAs(Integer.class);
+            var res = db.update(sql).parameters(c.getName(), c.getEmail()).returnGeneratedKeys().getAs(Long.class);
             return Mono.from(res);
         });
 
+    }
+
+    public Mono<Long> create(Customer customer) {
+
+        String sql = "INSERT INTO TB_CUSTOMER(name, email) VALUES (?, ?)";
+
+        return Mono.from(
+                db.update(sql)
+                        .parameters(customer.getName(),
+                                    customer.getEmail())
+                        .returnGeneratedKeys()
+                        .getAs(Long.class));
     }
 
 
@@ -45,7 +57,10 @@ public class CustomerRepository {
 
         String sql = "SELECT * FROM TB_CUSTOMER WHERE id = ?";
 
-        return Mono.from(db.select(sql).parameter(id).getAs(Customer.class));
+        return Mono.from(db.select(sql).parameter(id)
+                .get(rs -> new Customer(rs.getLong("id"),
+                                        rs.getString("name"),
+                                        rs.getString("emails"))));
 
     }
 
